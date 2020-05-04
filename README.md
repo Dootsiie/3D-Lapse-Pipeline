@@ -1,4 +1,4 @@
-# 3D-time-lapse-pipe
+# 3D Lapse Pipeline
 This pipeline constructs a 3D time-lapse video of a series of reconstructions, originating from CT scans. This project was a Final Thesis project and a collaboration between Naturalis Biodiversity Center and CWI Amsterdam.
 
 Installation
