@@ -1,0 +1,63 @@
+------------------------3-D CT SCAN TIMELAPSE PIPELINE-------------------------
+
+	-	This pipeline builds a 3-D timelapse out of
+		reconstructed CT scan images.
+
+				NECESSITIES
+	-	The CT scanned images must be reconstructed
+		first, before integrated into this pipeline.
+	-	The images should have a .tiff file format
+	-	All the reconstructions should have the same
+		dimensions for the pipeline to work correctly,
+		if this is not the case, the reconstructions
+		will be trimmed from the top until it meets
+		the correct dimensions
+	-	When a reconstruction has too little images,
+		blank images should be added to the top.
+	-	This pipeline should be run on a linux system,
+		or a similar environment.
+	-	When run locally, the local PC should have 
+		Avizo (preferably version 9.5) installed
+	-	Several packages containing Python extesnions
+		must be installed: FLEXData, FLEXTomo and
+		FLEXCalc produced by CWI Amsterdam
+		These can be found at:
+		
+
+	
+				COMPONENTS	
+	-	Rawedit.py Python script:	
+		This script prepares the raw 
+		reconstructions by trimming images when the
+		reconstructions are too large, removing
+		unnecessary files within the folder, adding
+		the necessary "geometry.toml" file.
+	-	Timelapse.py Python script:
+		This script processes batch images. There
+		are three parts: Scheduling and runtime of
+		input operations, scheduling and runtime of
+		reconstruction and restoration and restart
+		of a crashed process. (Written by CWI)
+	-	Avizo editing command:
+		Starts Avizo 9.5 and opens the Avizo Edit
+		Python script and a single reconstruction
+		at a time. This rule is called as often
+		as there are reconstructions found.
+	-	Avizo movie construction:
+		Combines all edited reconstructions into
+		a 3D-Timelapse movie
+	-	Help:
+		Displays the help message
+
+
+				
+	       		  RUNNING THE PIPELINE
+	-	Prior to any attempt of running the pipeline,
+		the correct packages should be installed.
+		If these are installed using Anaconda, the 
+		correct environment should be opened first.
+	-	This pipeline can be run by using the 	
+		following command:
+	> snakemake -s Minisnake --use-conda -T -R all
+	-	To run a single rule, use:
+	> snakemake -s Minisnake --use-conda -T <insert rule>

@@ -1,0 +1,114 @@
+#!python
+#!/usr/bin/env python3
+shell.executable("/bin/bash")
+
+import os
+
+"""
+This SnakeFile is the 3-D time lapse pipeline to construct 3-Dimensional
+Time lapses out of reconstructions. 
+
+Run this pipeline by making the installation folder where the scripts are
+as your currrent working folder by:
+
+cd /path/to/your/folder
+
+This pipeline can be run by using:
+
+snakemake --use-conda
+
+Several usefull flags:
+
+-R <rulename>		Force run (Will run the rule, eventhough output already exists)
+-T 			Use timestamps
+-s <snakefilename>	Running a Snakefile which is not named 'SnakeFile'
+-n			Dryrun, will run the pipeline, without activating the scripts
+
+
+Paths to own datasets:
+
+/media/beb/Elements/Naturalis/MicroCT/Erycina Volwassen
+
+/media/beb/Elements/Naturalis/MicroCT/Erycina Jong
+
+/media/beb/Elements/Naturalis/MicroCT/Erycina Marked
+"""
+
+
+# Taking pathway to data as input, checking whether it exists or not
+
+try:
+    print("========================================================================")
+    print("    Welcome to the 3-Dimensional CT time-lapse pipeline\n\n")
+    path = input('Please define the path to your reconstruction data : ')
+    while os.path.isdir(path) == False:
+        print('This is not a valid pathway, please enter a valid location')
+        print('(Using the linux format starting with "/" )')
+        path = input('Please define the path to your reconstruction data : ')
+    print(path)
+except:
+    print('ERROR')
+
+
+# Rule all to run the whole pipeline, defining wildcards (reconstrucions)
+rule all:
+  input:
+     expand([
+     path+"/{recon}/geometry.toml",
+     "./Movies/3D_lapse.mp4"
+     ],
+     recon=os.listdir(path))
+
+
+# Rule rawedit, run script to adjust dimensions of reconstrucionts to same value
+rule rawedit:
+  input:
+     a=path+"/{recon}"
+  output:
+     a=path+"/{recon}/geometry.toml"
+  log:
+     "logs/{recon}/rawedit.log"
+  script:
+     "rawedit.py"
+
+
+# Rule Timelapse, positioning all reconstructions the same way and binning to new reconstructions
+rule timelapse:
+  input:
+    a=path
+  log:
+    "logs/time.log"
+  conda:
+    "envs/ctscan.yaml"
+  script:
+    "timelapce.py"
+
+
+# Rule 3Dslicer, runs the script to build the sequence browser, and to make screenshots of every 3D reconstruction in order
+rule Slicer:
+  input:
+    a="logs/time.log"
+  output:
+    a="./SlicerCapture/Screenshots"
+  log:
+    "logs/3dslicer.log"
+  shell:
+    "./Slicer-4.10.2-linux-amd64/Slicer.exe --python-script 3dslicer.py"
+
+
+# Rule ffmpeg, converts all previously made reconstructions into a 3D timelapse movie
+rule ffmpeg:
+  input:
+    a="logs/3dslicer.log"
+  output:
+    a="./Movies/3D_lapse.mp4"
+  log:
+    "logs/ffmpeg.log"
+  shell:
+    "ffmpeg -i ./SlicerCapture/Screenshots/capture_%d.png -r 1/5 ./Movies/3D_lapse.mp4"
+
+
+# Rule help, when run individually using -R help, opens the help text for this pipeline
+rule help:
+  shell:
+    "cat naturalis_pipeline_help.txt"
