@@ -10,7 +10,7 @@ https://github.com/cicwi/flexTOMO
 https://github.com/cicwi/flexCALC
 
 After downloading the 3D time-lapse pipeline folder, the folders flexData, flexTomo and flexCalc inside the similarly named repositories (which contain the scripts) should be moved into the downloaded 3D time-lapse folder.
-Besides this, FFMPEG and 3D Slicer visualization software should be downloaded. For the pipeline to work correctly, 3D Slicer should be installed into the 3D time-lapse folder. Download links are found below:
+Besides this, FFMPEG and 3D Slicer visualization software should be downloaded. For the pipeline to work correctly, 3D Slicer should be installed into the 3D Lapse folder. Download links are found below:
 
 FFMPEG:
 http://ffmpeg.org/download.html
